@@ -2,6 +2,10 @@ from socket import *
 from time import ctime
 import Cytron as c
 import pigpio
+#servo setup:
+pi=pigpio.pi()
+pi.set_mode(23,pigpio.OUTPUT)
+pi.set_servo_pulsewidth(23,1500)
 
 HOST=''
 PORT=21567
@@ -30,14 +34,23 @@ while True:
                 j=0
             if(k<20) and (k>-20):
                 k=0
-            L=i
-            R=j
-            V=k
+            L=(i**3)/10000
+            R=(j**3)/10000
+            V=(k**3)/10000
 
             c.L(L)
             c.R(R)
             c.LV(V)
             c.RV(V)
+            cam=float(data[3])
+            angle=1000+cam*1000/180
+            if(angle<1200):
+                angle=1200
+            if(angle>2000):
+                angle=2000
+            pi.set_servo_pulsewidth(23,angle)
+
+                
         except:
             continue
     except KeyboardInterrupt:
